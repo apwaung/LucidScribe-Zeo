@@ -1,4 +1,4 @@
-// Copyright 2011 dancodru
+﻿// Copyright 2011 dancodru
 // Licensed under the Apache License, Version 2.0 (the "License");
 // You may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -9,18 +9,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO;
+using System.IO.Ports;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading;
+
 namespace ZeoScope
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Drawing;
-    using System.IO;
-    using System.IO.Ports;
-    using System.Reflection;
-    using System.Runtime.InteropServices;
-    using System.Text;
-    using System.Threading;
 
     #region Enums and Helper Classes
     internal enum ZeoDataType
@@ -200,7 +201,6 @@ namespace ZeoScope
 
         private Stopwatch stopWatch = new Stopwatch();
 
-        private SoundAlarm soundAlarm;
         #endregion
 
         #region Constructor and Properties
@@ -210,14 +210,6 @@ namespace ZeoScope
         }
 
         public event EventHandler HeadbandDocked;
-
-        public string FileName
-        {
-            get
-            {
-                return this.fileName;
-            }
-        }
 
         public int Length
         {
@@ -237,21 +229,12 @@ namespace ZeoScope
         #endregion
 
         #region Public Methods
-        public void OpenLiveStream(string comPortName, string fileName, SoundAlarm soundAlarm)
+        public Boolean OpenLiveStream(string comPortName)
         {
-            Directory.CreateDirectory("ZeoData");
-
-            this.soundAlarm = soundAlarm;
-
             this.LiveStream = true;
-            this.fileName = string.Format(@"ZeoData\{0}_{1}.zeo", fileName, DateTime.Now.ToString("yyyy-MM-dd_HHmmss"));
+            this.fileName = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\lucidcode\\Lucid Scribe\\Plugins\\Zeo." + DateTime.Now.Ticks.ToString();
             this.binFile = new FileStream(this.fileName, FileMode.CreateNew);
             this.AddVersionString();
-
-            if (this.soundAlarm != null)
-            {
-                this.WriteZ9Message(new ZeoMessage(), Z9DataType.SoundAlarmEnabled);
-            }
 
             this.serialPort = new SerialPort(comPortName, 38400, Parity.None, 8, StopBits.One);
             this.serialPort.Open();
@@ -259,50 +242,51 @@ namespace ZeoScope
 
             this.readThread = new Thread(new ThreadStart(this.ReadSerialStream));
             this.readThread.Start();
+            return true;
         }
 
         public void OpenFileStream(string fileName)
         {
-            this.fileName = fileName;
+          this.fileName = fileName;
 
-            this.binFile = new FileStream(this.fileName, FileMode.Open);
-            this.VerifyVersionString();
+          this.binFile = new FileStream(this.fileName, FileMode.Open);
+          this.VerifyVersionString();
 
-            try
+          try
+          {
+            while (true)
             {
-                while (true)
-                {
-                    ZeoMessage zeoMessage = this.ReadMessage();
-                    if (zeoMessage != null && zeoMessage.Waveform != null)
-                    {
-                        break;
-                    }
-                }
+              ZeoMessage zeoMessage = this.ReadMessage();
+              if (zeoMessage != null && zeoMessage.Waveform != null)
+              {
+                break;
+              }
+            }
 
-                while (true)
-                {
-                    ZeoMessage zeoMessage = this.ReadMessage();
-                    if (zeoMessage != null)
-                    {
-                        this.zeoMessages.Add(zeoMessage);
-                        if (zeoMessage.Event == ZeoEvent.HeadbandDocked)
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
-            catch (IOException)
+            while (true)
             {
-            }
-            finally
-            {
-                if (this.binFile != null)
+              ZeoMessage zeoMessage = this.ReadMessage();
+              if (zeoMessage != null)
+              {
+                this.zeoMessages.Add(zeoMessage);
+                if (zeoMessage.Event == ZeoEvent.HeadbandDocked)
                 {
-                    this.binFile.Close();
-                    this.binFile = null;
+                  break;
                 }
+              }
             }
+          }
+          catch (IOException)
+          {
+          }
+          finally
+          {
+            if (this.binFile != null)
+            {
+              this.binFile.Close();
+              this.binFile = null;
+            }
+          }
         }
 
         public ChannelData[] ReadFrequencyDataFromLastPosition(ref int lastPosition, int len)
@@ -518,15 +502,6 @@ namespace ZeoScope
                             this.zeoMessages.Add(zeoMessage);
                             this.rwLock.ReleaseLock();
 
-                            if (this.soundAlarm != null)
-                            {
-                                ZeoMessage zm = this.soundAlarm.ProcessZeoMessage(zeoMessage);
-                                if (zm != null)
-                                {
-                                    this.WriteZ9Message(zm, Z9DataType.SoundAlarmVolume);
-                                }
-                            }
-
                             if (zeoMessage.Event == ZeoEvent.HeadbandDocked)
                             {
                                 if (this.HeadbandDocked != null)
@@ -598,9 +573,7 @@ namespace ZeoScope
                 if (match == false)
                 {
                     this.Dispose();
-                    throw new ZeoException("Unsupported File Version: {0}\r\nCurrent Version: {1:00}.{2:00}.{3:0000}.{4:0000}",
-                        fileVersionString,
-                        version.Major, version.Minor, version.Build, version.Revision);
+                    throw new Exception("Unsupported File Version: "+fileVersionString);
                 }
             }
         }
@@ -611,9 +584,9 @@ namespace ZeoScope
 
             // A4 are standard Zeo messages
             bool isA4 = false;
-            
+
             // Z9 are additional messages from ZeoScope
-            bool isZ9 = false; 
+            bool isZ9 = false;
 
             byte header = 0;
             for (int j = 0; j < 20; j++)

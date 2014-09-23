@@ -4,26 +4,47 @@ using System.IO.Ports;
 using System.Threading;
 using System.Windows.Forms;
 using ZeoScope;
+using System.Drawing;
 
 namespace lucidcode.LucidScribe.Plugin.Zeo
 {
+  public class RawEventArgs : EventArgs
+  {
+    public RawEventArgs(int current)
+    {
+      this.Current = current;
+    }
+
+    public int Current { get; private set; }
+  }
 
   public static class Device
   {
     private static bool m_boolInitialized;
     private static bool m_boolInitError;
+    private static bool disposed = false;
 
     static int eegLastPosition = 0;
+    static int freqLastPosition = 0;
     static int stageLastPosition = 0;
 
     private static ZeoStream zeoStream;
     private static ManualResetEvent exitEvent = new ManualResetEvent(false);
+
+    public static String ZeoPort = "";
 
     public static Boolean Arduino = false;
     public static String ArduinoPort = "COM1";
     public static String ArduinoDelay = "1";
     public static String ArduinoOn = "1";
     public static String ArduinoOff = "0";
+    static Thread zeoThread;
+
+    public static EventHandler<RawEventArgs> ZeoChanged;
+
+    private static bool ClearDisplay;
+    private static double DisplayValue;
+    private static double StageValue;
 
     public static Boolean Initialize()
     {
@@ -33,7 +54,7 @@ namespace lucidcode.LucidScribe.Plugin.Zeo
 
         if (!m_boolInitialized)
         {
-          zeoStream = new ZeoStream(exitEvent);
+
 
           PortForm formPort = new PortForm();
           if (formPort.ShowDialog() == DialogResult.OK)
@@ -44,8 +65,13 @@ namespace lucidcode.LucidScribe.Plugin.Zeo
             ArduinoOn = formPort.ArduinoOn;
             ArduinoOff = formPort.ArduinoOff;
 
-            if (zeoStream.OpenLiveStream(formPort.SelectedPort))
+            ZeoPort = formPort.SelectedPort;
+
+            zeoStream = new ZeoStream(exitEvent);
+            if (zeoStream.OpenLiveStream(ZeoPort))
             {
+              zeoThread = new Thread(new ThreadStart(UpdateZeo));
+              zeoThread.Start();
               m_boolInitialized = true;
               return true;
             }
@@ -63,32 +89,61 @@ namespace lucidcode.LucidScribe.Plugin.Zeo
       }
     }
 
+    private static void UpdateZeo()
+    {
+      do
+      {
+        ChannelData[] channels = zeoStream.ReadEegFromLastPosition(ref eegLastPosition, 128);
+        if (channels.Length > 0)
+        {
+          double total = 0;
+          foreach (ChannelData channel in channels)
+          {
+            int calibratedValue = Convert.ToInt32(((channel.Values[0]) * 10) + 3000) / 6;
+            if (calibratedValue < 0) calibratedValue = 0;
+            if (calibratedValue > 999) calibratedValue = 999;
+
+            total += calibratedValue;
+
+            if (ZeoChanged != null)
+            {
+              RawEventArgs e = new RawEventArgs(calibratedValue);
+              ZeoChanged(null, e);
+            }
+          }
+          DisplayValue = total / 128;
+        }
+
+        channels = zeoStream.ReadStageDataFromLastPosition(ref stageLastPosition, 1);
+        if (channels.Length > 0)
+        {
+          StageValue = channels[0].Values[0] * -100;
+        }
+        if (disposed) { break; }
+
+        Thread.Sleep(1000);
+      } while (true);
+    }
+
     public static void Dispose()
     {
       if (m_boolInitialized)
       {
         exitEvent.Set();
+        disposed = true;
       }
     }
 
     public static Double GetValueEEG()
     {
-      ChannelData[] channels = zeoStream.ReadEegFromLastPosition(ref eegLastPosition, 1);
-      if (channels.Length > 0)
-      {
-        return channels[0].Values[0] * 1000;
-      }
-      return 0;
+      double temp = DisplayValue;
+      ClearDisplay = true;
+      return DisplayValue;
     }
 
     public static Double GetValueStage()
     {
-      ChannelData[] channels = zeoStream.ReadStageDataFromLastPosition(ref stageLastPosition, 1);
-      if (channels.Length > 0)
-      {
-        return channels[0].Values[0] * -100;
-      }
-      return 0;
+      return StageValue;
     }
 
   }
@@ -118,6 +173,121 @@ namespace lucidcode.LucidScribe.Plugin.Zeo
       public override void Dispose()
       {
         Device.Dispose();
+      }
+    }
+  }
+
+
+  namespace RAW
+  {
+    public class PluginHandler : lucidcode.LucidScribe.Interface.ILluminatedPlugin
+    {
+      public string Name
+      {
+        get { return "Zeo RAW"; }
+      }
+      public bool Initialize()
+      {
+        bool initialized = Device.Initialize();
+        Device.ZeoChanged += Device_ZeoChanged;
+        return initialized;
+      }
+
+      public event Interface.SenseHandler Sensed;
+      public void Device_ZeoChanged(object sender, RawEventArgs e)
+      {
+        if (ClearTicks)
+        {
+          ClearTicks = false;
+          TickCount = "";
+        }
+        TickCount += e.Current + ",";
+
+        if (ClearBuffer)
+        {
+          ClearBuffer = false;
+          BufferData = "";
+        }
+        BufferData += e.Current + ",";
+      }
+
+      public void Dispose()
+      {
+        Device.ZeoChanged -= Device_ZeoChanged;
+        Device.Dispose();
+      }
+
+      public Boolean isEnabled = false;
+      public Boolean Enabled
+      {
+        get
+        {
+          return isEnabled;
+        }
+        set
+        {
+          isEnabled = value;
+        }
+      }
+
+      public Color PluginColor = Color.White;
+      public Color Color
+      {
+        get
+        {
+          return Color;
+        }
+        set
+        {
+          Color = value;
+        }
+      }
+
+      private Boolean ClearTicks = false;
+      public String TickCount = "";
+      public String Ticks
+      {
+        get
+        {
+          ClearTicks = true;
+          String ticks = TickCount;
+          TickCount = "";
+          return ticks;
+        }
+        set
+        {
+          TickCount = value;
+        }
+      }
+
+      private Boolean ClearBuffer = false;
+      public String BufferData = "";
+      public String Buffer
+      {
+        get
+        {
+          ClearBuffer = true;
+          String buffer = BufferData;
+          BufferData = "";
+          return buffer;
+        }
+        set
+        {
+          BufferData = value;
+        }
+      }
+
+      int lastHour;
+      public int LastHour
+      {
+        get
+        {
+          return lastHour;
+        }
+        set
+        {
+          lastHour = value;
+        }
       }
     }
   }

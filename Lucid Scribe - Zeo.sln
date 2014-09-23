@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zeo", "Zeo\Zeo.csproj", "{89BF4B79-A4EA-4381-BD61-7EF1029C1C54}"
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "LucidScribe.Zeo", "Installer\Lucid Scribe Zeo.vdproj", "{950253AD-5717-4254-B815-A7AFECA2B4CA}"

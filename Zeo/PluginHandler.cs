@@ -120,14 +120,14 @@ namespace lucidcode.LucidScribe.Plugin.Zeo
 
               for (int y = 0; y < 16; y++)
               {
-                int index = (x * 16) + y;
-                if (channels[index].Values[0] > maximum)
+                float value = channels[(x * 16) + y].Values[0];
+                if (value > maximum)
                 {
-                  maximum = channels[index].Values[0];
+                  maximum = value;
                 }
-                if (channels[index].Values[0] < minimum)
+                if (value < minimum)
                 {
-                  minimum = channels[index].Values[0];
+                  minimum = value;
                 }
               }
 

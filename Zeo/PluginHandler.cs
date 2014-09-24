@@ -42,9 +42,10 @@ namespace lucidcode.LucidScribe.Plugin.Zeo
 
     public static EventHandler<RawEventArgs> ZeoChanged;
 
-    private static bool ClearDisplay;
-    private static double DisplayValue;
     private static double StageValue;
+
+    private static int[] eigths = new int[8];
+    private static List<int> tenths = new List<int>();
 
     public static Boolean Initialize()
     {
@@ -54,8 +55,6 @@ namespace lucidcode.LucidScribe.Plugin.Zeo
 
         if (!m_boolInitialized)
         {
-
-
           PortForm formPort = new PortForm();
           if (formPort.ShowDialog() == DialogResult.OK)
           {
@@ -111,7 +110,36 @@ namespace lucidcode.LucidScribe.Plugin.Zeo
               ZeoChanged(null, e);
             }
           }
-          DisplayValue = total / 128;
+
+          if (channels.Length == 128)
+          {
+            for (int x = 0; x < 8; x++)
+            {
+              float maximum = 0;
+              float minimum = 0;
+
+              for (int y = 0; y < 16; y++)
+              {
+                int index = (x * 16) + y;
+                if (channels[index].Values[0] > maximum)
+                {
+                  maximum = channels[index].Values[0];
+                }
+                if (channels[index].Values[0] < minimum)
+                {
+                  minimum = channels[index].Values[0];
+                }
+              }
+
+              float greatest = maximum;
+              if (minimum * -1 > maximum)
+              {
+                greatest = minimum;
+              }
+
+              eigths[x] = Convert.ToInt32((greatest * 10) + 3000) / 6;
+            }
+          }
         }
 
         channels = zeoStream.ReadStageDataFromLastPosition(ref stageLastPosition, 1);
@@ -136,9 +164,8 @@ namespace lucidcode.LucidScribe.Plugin.Zeo
 
     public static Double GetValueEEG()
     {
-      double temp = DisplayValue;
-      ClearDisplay = true;
-      return DisplayValue;
+      double eigth = DateTime.Now.Millisecond / 125;
+      return eigths[(int)(Math.Round(eigth))];
     }
 
     public static Double GetValueStage()

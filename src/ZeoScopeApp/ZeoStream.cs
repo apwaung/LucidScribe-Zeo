@@ -405,11 +405,11 @@ namespace ZeoScope
                 }
             }
 
-            //ChannelData[] filteredValues = this.Filter50Hz(eegValues);
-            //for (int i = 0; i < len; i++)
-            //{
-            //    eegValues[i] = filteredValues[i];
-            //}
+            ChannelData[] filteredValues = this.Filter50Hz(eegValues);
+            for (int i = 0; i < len; i++)
+            {
+              eegValues[i] = filteredValues[i];
+            }
 
             this.rwLock.ReleaseLock();
 

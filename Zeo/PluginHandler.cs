@@ -44,6 +44,7 @@ namespace lucidcode.LucidScribe.Plugin.Zeo
 
     private static double StageValue;
 
+    private static int[] frequencies = new int[8];
     private static int[] eigths = new int[8];
     private static List<int> tenths = new List<int>();
 
@@ -142,6 +143,15 @@ namespace lucidcode.LucidScribe.Plugin.Zeo
           }
         }
 
+        channels = zeoStream.ReadFrequencyDataFromLastPosition(ref freqLastPosition, 1);
+        if (channels.Length > 0 && channels[0] != null)
+        {
+          for (int i = 0; i < channels[0].Values.Length - 1; i++)
+          {
+            frequencies[i] = Convert.ToInt32((channels[0].Values[i] * 20));
+          }
+        }
+
         channels = zeoStream.ReadStageDataFromLastPosition(ref stageLastPosition, 1);
         if (channels.Length > 0)
         {
@@ -166,6 +176,41 @@ namespace lucidcode.LucidScribe.Plugin.Zeo
     {
       double eigth = DateTime.Now.Millisecond / 125;
       return eigths[(int)(Math.Round(eigth))];
+    }
+
+    public static Double GetValueDelta()
+    {
+      return frequencies[0];
+    }
+
+    public static Double GetValueTheta()
+    {
+      return frequencies[1];
+    }
+
+    public static Double GetValueAlpha()
+    {
+      return frequencies[2];
+    }
+
+    public static Double GetValueBeta1()
+    {
+      return frequencies[3];
+    }
+
+    public static Double GetValueBeta2()
+    {
+      return frequencies[4];
+    }
+
+    public static Double GetValueBeta3()
+    {
+      return frequencies[5];
+    }
+
+    public static Double GetValueGamma()
+    {
+      return frequencies[6];
     }
 
     public static Double GetValueStage()
@@ -203,7 +248,6 @@ namespace lucidcode.LucidScribe.Plugin.Zeo
       }
     }
   }
-
 
   namespace RAW
   {
@@ -374,6 +418,209 @@ namespace lucidcode.LucidScribe.Plugin.Zeo
         arduinoPort.Dispose();
 
         Device.Arduino = true;
+      }
+    }
+  }
+
+  namespace Delta
+  {
+    public class PluginHandler : lucidcode.LucidScribe.Interface.LucidPluginBase
+    {
+      public override string Name
+      {
+        get { return "D"; }
+      }
+      public override bool Initialize()
+      {
+        return Device.Initialize();
+      }
+      public override double Value
+      {
+        get
+        {
+          double dblValue = Device.GetValueDelta();
+          if (dblValue > 999) { dblValue = 999; }
+          if (dblValue < 0) { dblValue = 0; }
+          return dblValue;
+        }
+      }
+      public override void Dispose()
+      {
+        Device.Dispose();
+      }
+    }
+  }
+
+  namespace Theta
+  {
+    public class PluginHandler : lucidcode.LucidScribe.Interface.LucidPluginBase
+    {
+      public override string Name
+      {
+        get { return "T"; }
+      }
+      public override bool Initialize()
+      {
+        return Device.Initialize();
+      }
+      public override double Value
+      {
+        get
+        {
+          double dblValue = Device.GetValueTheta();
+          if (dblValue > 999) { dblValue = 999; }
+          if (dblValue < 0) { dblValue = 0; }
+          return dblValue;
+        }
+      }
+      public override void Dispose()
+      {
+        Device.Dispose();
+      }
+    }
+  }
+
+  namespace Alpha
+  {
+    public class PluginHandler : lucidcode.LucidScribe.Interface.LucidPluginBase
+    {
+      public override string Name
+      {
+        get { return "A"; }
+      }
+      public override bool Initialize()
+      {
+        return Device.Initialize();
+      }
+      public override double Value
+      {
+        get
+        {
+          double dblValue = Device.GetValueAlpha();
+          if (dblValue > 999) { dblValue = 999; }
+          if (dblValue < 0) { dblValue = 0; }
+          return dblValue;
+        }
+      }
+      public override void Dispose()
+      {
+        Device.Dispose();
+      }
+    }
+  }
+
+  namespace Beta1
+  {
+    public class PluginHandler : lucidcode.LucidScribe.Interface.LucidPluginBase
+    {
+      public override string Name
+      {
+        get { return "B1"; }
+      }
+      public override bool Initialize()
+      {
+        return Device.Initialize();
+      }
+      public override double Value
+      {
+        get
+        {
+          double dblValue = Device.GetValueBeta1();
+          if (dblValue > 999) { dblValue = 999; }
+          if (dblValue < 0) { dblValue = 0; }
+          return dblValue;
+        }
+      }
+      public override void Dispose()
+      {
+        Device.Dispose();
+      }
+    }
+  }
+
+  namespace Beta2
+  {
+    public class PluginHandler : lucidcode.LucidScribe.Interface.LucidPluginBase
+    {
+      public override string Name
+      {
+        get { return "B2"; }
+      }
+      public override bool Initialize()
+      {
+        return Device.Initialize();
+      }
+      public override double Value
+      {
+        get
+        {
+          double dblValue = Device.GetValueBeta2();
+          if (dblValue > 999) { dblValue = 999; }
+          if (dblValue < 0) { dblValue = 0; }
+          return dblValue;
+        }
+      }
+      public override void Dispose()
+      {
+        Device.Dispose();
+      }
+    }
+  }
+
+  namespace Beta3
+  {
+    public class PluginHandler : lucidcode.LucidScribe.Interface.LucidPluginBase
+    {
+      public override string Name
+      {
+        get { return "B3"; }
+      }
+      public override bool Initialize()
+      {
+        return Device.Initialize();
+      }
+      public override double Value
+      {
+        get
+        {
+          double dblValue = Device.GetValueBeta3();
+          if (dblValue > 999) { dblValue = 999; }
+          if (dblValue < 0) { dblValue = 0; }
+          return dblValue;
+        }
+      }
+      public override void Dispose()
+      {
+        Device.Dispose();
+      }
+    }
+  }
+
+  namespace Gamma
+  {
+    public class PluginHandler : lucidcode.LucidScribe.Interface.LucidPluginBase
+    {
+      public override string Name
+      {
+        get { return "G"; }
+      }
+      public override bool Initialize()
+      {
+        return Device.Initialize();
+      }
+      public override double Value
+      {
+        get
+        {
+          double dblValue = Device.GetValueGamma();
+          if (dblValue > 999) { dblValue = 999; }
+          if (dblValue < 0) { dblValue = 0; }
+          return dblValue;
+        }
+      }
+      public override void Dispose()
+      {
+        Device.Dispose();
       }
     }
   }

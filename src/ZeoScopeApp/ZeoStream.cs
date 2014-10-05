@@ -331,7 +331,7 @@ namespace ZeoScope
             return freqData;
         }
 
-        public ChannelData[] ReadStageDataFromLastPosition(ref int lastPosition, int len)
+        public ChannelData[] ReadStageDataFromLastPosition(ref int lastPosition, int len, ref int stage)
         {
             this.rwLock.AcquireReaderLock(Timeout.Infinite);
 
@@ -343,6 +343,10 @@ namespace ZeoScope
                 stageData[j] = new ChannelData(2);
                 if (zeoMessage.SleepStage != null)
                 {
+                    if (zeoMessage.SleepStage != ZeoSleepStage.Undefined & zeoMessage.SleepStage != ZeoSleepStage.Undefined0)
+                    {
+                        stage = -(int)zeoMessage.SleepStage;
+                    }
                     stageData[j].Values[0] = -(int)zeoMessage.SleepStage;
                     stageData[j].Values[1] = zeoMessage.SoundAlarmVolume;
                     j++;

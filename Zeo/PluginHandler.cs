@@ -152,11 +152,9 @@ namespace lucidcode.LucidScribe.Plugin.Zeo
           }
         }
 
-        channels = zeoStream.ReadStageDataFromLastPosition(ref stageLastPosition, 1);
-        if (channels.Length > 0)
-        {
-          StageValue = channels[0].Values[0] * -100;
-        }
+        int stage = 0;
+        channels = zeoStream.ReadStageDataFromLastPosition(ref stageLastPosition, 64, ref stage);
+        StageValue = stage * -100;
         if (disposed) { break; }
 
         Thread.Sleep(1000);

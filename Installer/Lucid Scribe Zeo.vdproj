@@ -166,7 +166,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_7477139A985373FCCAE741F7BAE81CE6"
+        "OwnerKey" = "8:_74CC5CEA548AAB471EE4049C7020BD21"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -178,7 +178,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_74CC5CEA548AAB471EE4049C7020BD21"
+        "OwnerKey" = "8:_7477139A985373FCCAE741F7BAE81CE6"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -278,7 +278,7 @@
                 {
                 "Name" = "8:.NET Framework"
                 "Message" = "8:[VSDNETMSG]"
-                "FrameworkVersion" = "8:3.5.30729      "
+                "FrameworkVersion" = "8:3.5.30729       "
                 "AllowLaterVersions" = "11:FALSE"
                 "InstallUrl" = "8:http://go.microsoft.com/fwlink/?LinkId=76617"
                 }
@@ -941,15 +941,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Lucid Scribe Zeo"
-        "ProductCode" = "8:{AB685DC7-C274-4B7F-AFDB-21663E9BA839}"
-        "PackageCode" = "8:{3C99FFBC-46AE-46E3-AC31-3959F7EC78CF}"
+        "ProductCode" = "8:{262B8926-F9D8-47FB-98A7-A7619797BFAD}"
+        "PackageCode" = "8:{BDC46156-C47C-4463-A0D2-0B44AF42FA19}"
         "UpgradeCode" = "8:{7FC45659-EDA9-401F-A2DB-7EE30232BDE8}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:0.9.9"
+        "ProductVersion" = "8:1.0.0"
         "Manufacturer" = "8:lucidcode"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.lucid-code.com/Support"

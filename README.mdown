@@ -3,4 +3,6 @@ LucidScribe-Zeo
 
 Monitors the EEG and sleep stage data from the Zeo.
 
+<img src="http://lucidcoder.files.wordpress.com/2014/09/zeosync.png?w=640" />
+
 <a href="http://lucidcode.com/category/software/Lucid-Scribe-Plugins/Zeo/">Download Installer</a> (requires <a href="http://lucidcode.com/LucidScribe/">Lucid Scribe</a>)

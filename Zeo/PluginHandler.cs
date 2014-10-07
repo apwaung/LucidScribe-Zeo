@@ -153,7 +153,7 @@ namespace lucidcode.LucidScribe.Plugin.Zeo
         }
 
         int stage = 0;
-        channels = zeoStream.ReadStageDataFromLastPosition(ref stageLastPosition, 64, ref stage);
+        zeoStream.ReadStageDataFromLastPosition(ref stage);
         StageValue = stage * -100;
         if (disposed) { break; }
 

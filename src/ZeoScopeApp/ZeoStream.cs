@@ -331,46 +331,23 @@ namespace ZeoScope
             return freqData;
         }
 
-        public ChannelData[] ReadStageDataFromLastPosition(ref int lastPosition, int len, ref int stage)
+        public void ReadStageDataFromLastPosition(ref int stage)
         {
             this.rwLock.AcquireReaderLock(Timeout.Infinite);
 
-            ChannelData[] stageData = new ChannelData[len];
-
-            for (int i = lastPosition, j = 0; j < len && i < this.zeoMessages.Count; i++)
+            for (int i = this.zeoMessages.Count - 1; i > 0; i--)
             {
-                ZeoMessage zeoMessage = this.zeoMessages[i];
-                stageData[j] = new ChannelData(2);
-                if (zeoMessage.SleepStage != null)
+              ZeoMessage zeoMessage = this.zeoMessages[i];
+              if (zeoMessage.SleepStage != null)
+              {
+                if (zeoMessage.SleepStage != ZeoSleepStage.Undefined & zeoMessage.SleepStage != ZeoSleepStage.Undefined0)
                 {
-                    if (zeoMessage.SleepStage != ZeoSleepStage.Undefined & zeoMessage.SleepStage != ZeoSleepStage.Undefined0)
-                    {
-                        stage = -(int)zeoMessage.SleepStage;
-                    }
-                    stageData[j].Values[0] = -(int)zeoMessage.SleepStage;
-                    stageData[j].Values[1] = zeoMessage.SoundAlarmVolume;
-                    j++;
+                  stage = -(int)zeoMessage.SleepStage;
+                  break;
                 }
+              }
             }
-
-            for (int i = 0; i < len; i++)
-            {
-                if (stageData[i] == null)
-                {
-                    stageData[i] = new ChannelData(2);
-                    stageData[i].Values[0] = -5;
-                    stageData[i].Values[1] = ZeoMessage.MinSoundVolume;
-                }
-                else if (stageData[i].Values[0] == 0)
-                {
-                    stageData[i].Values[0] = -5;
-                    stageData[i].Values[1] = ZeoMessage.MinSoundVolume;
-                }
-            }
-
             this.rwLock.ReleaseLock();
-
-            return stageData;
         }
 
         public ChannelData[] ReadEegFromLastPosition(ref int lastPosition, int len)

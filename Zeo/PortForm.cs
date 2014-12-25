@@ -17,12 +17,6 @@ namespace lucidcode.LucidScribe.Plugin.Zeo
         public String SelectedPort = "";
         private Boolean loaded = false;
 
-        public Boolean Arduino = false;
-        public String ArduinoPort = "COM1";
-        public String ArduinoDelay = "1";
-        public String ArduinoOn = "1";
-        public String ArduinoOff = "0";
-
         public PortForm()
         {
             InitializeComponent();
@@ -38,7 +32,6 @@ namespace lucidcode.LucidScribe.Plugin.Zeo
         private void LoadPortList()
         {
           lstPorts.Clear();
-          cmbArduinoPort.Items.Clear();
           foreach (string strPort in SerialPort.GetPortNames())
           {
             String strPortName = strPort;
@@ -69,8 +62,6 @@ namespace lucidcode.LucidScribe.Plugin.Zeo
             strPortName = strPortName.Replace("y", "");
             strPortName = strPortName.Replace("z", "");
 
-            cmbArduinoPort.Items.Add(strPortName);
-
             ListViewItem lstItem = new ListViewItem(strPortName);
             lstItem.ImageIndex = 0;
             lstPorts.Items.Add(lstItem);
@@ -88,62 +79,6 @@ namespace lucidcode.LucidScribe.Plugin.Zeo
             File.WriteAllText(m_strPath + "Plugins\\Zeo.User.lsd", defaultSettings);
           }
 
-          XmlDocument xmlSettings = new XmlDocument();
-          xmlSettings.Load(m_strPath + "Plugins\\Zeo.User.lsd");
-
-          if (xmlSettings.DocumentElement.SelectSingleNode("//Arduino") != null && xmlSettings.DocumentElement.SelectSingleNode("//Arduino").InnerText == "1")
-          {
-            chkArduino.Checked = true;
-            Arduino = true;
-          }
-
-          if (xmlSettings.DocumentElement.SelectSingleNode("//ArduinoPort") != null)
-          {
-            cmbArduinoPort.Text = xmlSettings.DocumentElement.SelectSingleNode("//ArduinoPort").InnerText;
-            ArduinoPort = xmlSettings.DocumentElement.SelectSingleNode("//ArduinoPort").InnerText;
-          }
-
-          if (xmlSettings.DocumentElement.SelectSingleNode("//ArduinoOn") != null)
-          {
-            txtArduinoOn.Text = xmlSettings.DocumentElement.SelectSingleNode("//ArduinoOn").InnerText;
-            ArduinoOn = xmlSettings.DocumentElement.SelectSingleNode("//ArduinoOn").InnerText;
-          }
-
-          if (xmlSettings.DocumentElement.SelectSingleNode("//ArduinoOff") != null)
-          {
-            txtArduinoOff.Text = xmlSettings.DocumentElement.SelectSingleNode("//ArduinoOff").InnerText;
-            ArduinoOff = xmlSettings.DocumentElement.SelectSingleNode("//ArduinoOff").InnerText;
-          }
-
-          if (xmlSettings.DocumentElement.SelectSingleNode("//ArduinoDelay") != null)
-          {
-            cmbArduinoDelay.Text = xmlSettings.DocumentElement.SelectSingleNode("//ArduinoDelay").InnerText;
-            ArduinoDelay = xmlSettings.DocumentElement.SelectSingleNode("//ArduinoDelay").InnerText;
-          }
-        }
-
-        private void SaveSettings()
-        {
-          String settingsXML = "<LucidScribeData>";
-          settingsXML += "<Plugin>";
-
-          if (chkArduino.Checked)
-          {
-            settingsXML += "<Arduino>1</Arduino>";
-          }
-          else
-          {
-            settingsXML += "<Arduino>0</Arduino>";
-          }
-
-          settingsXML += "<ArduinoPort>" + cmbArduinoPort.Text + "</ArduinoPort>";
-          settingsXML += "<ArduinoDelay>" + cmbArduinoDelay.Text + "</ArduinoDelay>";
-          settingsXML += "<ArduinoOn>" + txtArduinoOn.Text + "</ArduinoOn>";
-          settingsXML += "<ArduinoOff>" + txtArduinoOff.Text + "</ArduinoOff>";
-
-          settingsXML += "</Plugin>";
-          settingsXML += "</LucidScribeData>";
-          File.WriteAllText(m_strPath + "Plugins\\Zeo.User.lsd", settingsXML);
         }
 
         private void lstPlaylists_MouseMove(object sender, MouseEventArgs e)
@@ -166,46 +101,6 @@ namespace lucidcode.LucidScribe.Plugin.Zeo
                 DialogResult = DialogResult.OK;
                 Close();
             }
-        }
-
-        private void chkArduino_CheckedChanged(object sender, EventArgs e)
-        {
-          if (!loaded) { return; }
-
-          Arduino = chkArduino.Checked;
-          SaveSettings();
-        }
-
-        private void cmbArduinoPort_SelectedIndexChanged(object sender, EventArgs e)
-        {
-          if (!loaded) { return; }
-
-          ArduinoPort = cmbArduinoPort.Text;
-          SaveSettings();
-        }
-
-        private void cmbArduinoDelay_SelectedIndexChanged(object sender, EventArgs e)
-        {
-          if (!loaded) { return; }
-
-          ArduinoDelay = cmbArduinoDelay.Text;
-          SaveSettings();
-        }
-
-        private void txtArduinoOn_TextChanged(object sender, EventArgs e)
-        {
-          if (!loaded) { return; }
-
-          ArduinoOn = txtArduinoOn.Text;
-          SaveSettings();
-        }
-
-        private void txtArduinoOff_TextChanged(object sender, EventArgs e)
-        {
-          if (!loaded) { return; }
-
-          ArduinoOff = txtArduinoOff.Text;
-          SaveSettings();
         }
     }
 }

@@ -278,7 +278,7 @@
                 {
                 "Name" = "8:.NET Framework"
                 "Message" = "8:[VSDNETMSG]"
-                "FrameworkVersion" = "8:3.5.30729        "
+                "FrameworkVersion" = "8:3.5.30729          "
                 "AllowLaterVersions" = "11:FALSE"
                 "InstallUrl" = "8:http://go.microsoft.com/fwlink/?LinkId=76617"
                 }
@@ -573,6 +573,11 @@
             "AssemblyAsmDisplayName" = "8:lucidcode.LucidScribe.Interface.Illuminated, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
+                    "_7477139A985373FCCAE741F7BAE81CE6"
+                    {
+                    "Name" = "8:lucidcode.LucidScribe.Interface.Illuminated.dll"
+                    "Attributes" = "3:512"
+                    }
                 }
             "SourcePath" = "8:lucidcode.LucidScribe.Interface.Illuminated.dll"
             "TargetName" = "8:"
@@ -599,6 +604,11 @@
             "AssemblyAsmDisplayName" = "8:lucidcode.Controls, Version=1.0.0.1, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
+                    "_74CC5CEA548AAB471EE4049C7020BD21"
+                    {
+                    "Name" = "8:lucidcode.Controls.dll"
+                    "Attributes" = "3:512"
+                    }
                 }
             "SourcePath" = "8:lucidcode.Controls.dll"
             "TargetName" = "8:"
@@ -705,6 +715,11 @@
             "AssemblyAsmDisplayName" = "8:lucidcode.LucidScribe.Interface, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
+                    "_A6D309C81FB7C7C8EB6F2A75CDAED83F"
+                    {
+                    "Name" = "8:lucidcode.LucidScribe.Interface.dll"
+                    "Attributes" = "3:512"
+                    }
                 }
             "SourcePath" = "8:lucidcode.LucidScribe.Interface.dll"
             "TargetName" = "8:"
@@ -941,15 +956,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Lucid Scribe Zeo"
-        "ProductCode" = "8:{C45C1CFD-5236-459B-9869-BE35D7698FC8}"
-        "PackageCode" = "8:{6971806C-8C05-4299-AC8C-710A0D0AF999}"
+        "ProductCode" = "8:{A3893CDD-058E-408A-ACBE-69FFB7F7C5EB}"
+        "PackageCode" = "8:{1A4A0704-C998-4884-AC00-D0AFDBEF00DC}"
         "UpgradeCode" = "8:{7FC45659-EDA9-401F-A2DB-7EE30232BDE8}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.0.1"
+        "ProductVersion" = "8:1.0.2"
         "Manufacturer" = "8:lucidcode"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.lucid-code.com/Support"
